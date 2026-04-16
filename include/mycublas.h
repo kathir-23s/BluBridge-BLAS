@@ -202,8 +202,8 @@ extern "C" void mycublasSgemmAddmm_sm89(
     const float* A, int lda, long long int strideA,
     const float* B, int ldb, long long int strideB,
     const float beta,
-    float* C, int ldc, long long int strideC,
     const float* bias, int64_t bias_numel,
+    float* C, int ldc, long long int strideC,
     int batchCount);
 
 extern "C" void mycublasHgemmAddmm_sm89(
@@ -262,6 +262,24 @@ extern "C" void mycublasSgemmStridedBatched_tn_SM86(
     const float beta,
     float* d_C, int ldc, long long int strideC, 
     int batchCount);
+
+extern "C" void mycublasSgemmStridedBatched_nn_SM89(
+    mycublasHandle_t handle, int M, int N, int K, const float alpha,
+    const float* d_A, int lda, long long int strideA,
+    const float* d_B, int ldb, long long int strideB,
+    const float beta, float* d_C, int ldc, long long int strideC, int batchCount);
+
+extern "C" void mycublasSgemmStridedBatched_nt_SM89(
+    mycublasHandle_t handle, int M, int N, int K, const float alpha,
+    const float* d_A, int lda, long long int strideA,
+    const float* d_B, int ldb, long long int strideB,
+    const float beta, float* d_C, int ldc, long long int strideC, int batchCount);
+
+extern "C" void mycublasSgemmStridedBatched_tn_SM89(
+    mycublasHandle_t handle, int M, int N, int K, const float alpha,
+    const float* d_A, int lda, long long int strideA,
+    const float* d_B, int ldb, long long int strideB,
+    const float beta, float* d_C, int ldc, long long int strideC, int batchCount);
 
 
 extern "C" void mycublasHgemmStridedBatched(

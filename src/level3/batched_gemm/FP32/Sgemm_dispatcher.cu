@@ -30,7 +30,12 @@ extern "C" void mycublasSgemmStridedBatched_nt_dispatch(
     int sm_ver, sm_count;
     get_gpu_info(&sm_ver, &sm_count);
 
-    // 1. Prioritize SM86 for standard large shapes (Relaxed to catch Attention kernels)
+    if (sm_ver >= 89) {
+        mycublasSgemmStridedBatched_nt_SM89(handle, M, N, K, alpha, A, lda, strideA, B, ldb, strideB, beta, C, ldc, strideC, batchCount);
+        return;
+    }
+
+    // 2. Prioritize SM86 for standard large shapes (Relaxed to catch Attention kernels)
     if (sm_ver >= 80) {
         if (M >= 64 && N >= 64 && K >= 32) {
             mycublasSgemmStridedBatched_nt_SM86(handle, M, N, K, alpha, A, lda, strideA, B, ldb, strideB, beta, C, ldc, strideC, batchCount);
@@ -80,6 +85,35 @@ extern "C" void mycublasSgemmStridedBatched_nt_dispatch(
     }
 }
 
+extern "C" void mycublasSgemmAddmm(
+    mycublasHandle_t handle, int M, int N, int K, const float alpha,
+    const float* d_A, int lda, long long int strideA,
+    const float* d_B, int ldb, long long int strideB,
+    const float beta, 
+    const float* d_bias, int64_t bias_numel,
+    float* d_C, int ldc, long long int strideC, int batchCount)
+{
+    int sm_ver, sm_count;
+    get_gpu_info(&sm_ver, &sm_count);
+
+    if (sm_ver >= 89) {
+        mycublasSgemmAddmm_sm89(handle, M, N, K, alpha, d_A, lda, strideA, d_B, ldb, strideB, beta, d_bias, bias_numel, d_C, ldc, strideC, batchCount);
+    } else {
+        mycublasSgemmAddmm_SM86(handle, M, N, K, alpha, d_A, lda, strideA, d_B, ldb, strideB, beta, d_bias, bias_numel, d_C, ldc, strideC, batchCount);
+    }
+}
+
+extern "C" void mycublasSgemmAddmm_dispatch(
+    mycublasHandle_t handle, int M, int N, int K, const float alpha,
+    const float* d_A, int lda, long long int strideA,
+    const float* d_B, int ldb, long long int strideB,
+    const float beta, 
+    const float* d_bias, int64_t bias_numel,
+    float* d_C, int ldc, long long int strideC, int batchCount)
+{
+    mycublasSgemmAddmm(handle, M, N, K, alpha, d_A, lda, strideA, d_B, ldb, strideB, beta, d_bias, bias_numel, d_C, ldc, strideC, batchCount);
+}
+
 // Heuristic-based dispatcher for TN layout SGEMM
 extern "C" void mycublasSgemmStridedBatched_tn_dispatch(
     mycublasHandle_t handle, int M, int N, int K, const float alpha,
@@ -90,6 +124,11 @@ extern "C" void mycublasSgemmStridedBatched_tn_dispatch(
 {
     int sm_ver, sm_count;
     get_gpu_info(&sm_ver, &sm_count);
+
+    if (sm_ver >= 89) {
+        mycublasSgemmStridedBatched_tn_SM89(handle, M, N, K, alpha, A, lda, strideA, B, ldb, strideB, beta, C, ldc, strideC, batchCount);
+        return;
+    }
 
     // 1. Prioritize SM86 for standard large shapes
     if (sm_ver >= 80) {
@@ -149,6 +188,11 @@ extern "C" void mycublasSgemmStridedBatched_nn_dispatch(
 {
     int sm_ver, sm_count;
     get_gpu_info(&sm_ver, &sm_count);
+
+    if (sm_ver >= 89) {
+        mycublasSgemmStridedBatched_nn_SM89(handle, M, N, K, alpha, A, lda, strideA, B, ldb, strideB, beta, C, ldc, strideC, batchCount);
+        return;
+    }
 
     // 1. Prioritize SM86 for standard large shapes
     if (sm_ver >= 80) {

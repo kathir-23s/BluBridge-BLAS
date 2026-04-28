@@ -16,7 +16,7 @@ TARGET_SO := $(BUILDDIR)/lib$(LIBNAME).so
 # Compilation Flags
 CPPFLAGS = -Iinclude -I/usr/local/cuda/include -Iexternal/cutlass/include -I/usr/local/cuda-13.0/targets/x86_64-linux/include/cccl
 CXXFLAGS = -std=c++17 -fPIC -Wall -O3 -DNDEBUG
-NVCCFLAGS = -std=c++17 -Xcompiler="-fPIC" -gencode arch=compute_86,code=sm_86 -gencode arch=compute_89,code=sm_89 -O3 -DNDEBUG -Xptxas -O3 -use_fast_math -Iexternal/cutlass/include -I/usr/local/cuda-13.0/targets/x86_64-linux/include/cccl
+NVCCFLAGS = -std=c++17 -Xcompiler="-fPIC" -gencode arch=compute_89,code=sm_89 -O3 -DNDEBUG -Xptxas -O3 -use_fast_math -Iexternal/cutlass/include -I/usr/local/cuda-13.0/targets/x86_64-linux/include/cccl
 
 # Linker Flags
 RPATH = -Xlinker -rpath -Xlinker '$$ORIGIN' -Xlinker -rpath -Xlinker '$$ORIGIN/build'
